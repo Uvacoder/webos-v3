@@ -1,2 +1,2 @@
-# webos-v3
-WebOS V3
+# WebOS
+WebOS
