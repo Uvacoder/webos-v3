@@ -1,12 +1,20 @@
 import React, { createElement, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { IoRadioButtonOn as SystemIcon } from 'react-icons/io5'
 import * as TrayIcons from 'react-icons/io5'
 
 import { ContextMenu } from '../ContextMenu'
+import { contextMenuStatus } from '../ContextMenu/ContextMenu.registry'
 
 export const TopBar = ({ active = false }) => {
+  const dispatch = useDispatch()
+
   const [realActive, setRealActive] = useState(false)
   const [systemMenuActive, setSystemMenuActive] = useState(false)
+
+  const { contextMenuVisibility } = useSelector(({ ContextMenu }) => ({
+    contextMenuVisibility: ContextMenu.visibility,
+  }))
 
   useEffect(() => {
     if (active) {
@@ -16,15 +24,22 @@ export const TopBar = ({ active = false }) => {
     }
   }, [active])
 
+  useEffect(() => {
+    if (!contextMenuVisibility) {
+      setSystemMenuActive(false)
+    }
+  }, [contextMenuVisibility])
+
   const onSystemIconToggle = () => {
     setSystemMenuActive(!systemMenuActive)
+    dispatch(contextMenuStatus(true))
   }
 
   const systemMenu = [
     {
       label: 'File',
       shortcut: 'F',
-      iconCode: null
+      iconCode: null,
     },
     {
       label: 'Edit',
@@ -45,8 +60,8 @@ export const TopBar = ({ active = false }) => {
     null,
     {
       label: 'Logout',
-      iconCode: 'IoPower'
-    }
+      iconCode: 'IoPower',
+    },
   ]
 
   const appMenu = [
@@ -107,8 +122,11 @@ export const TopBar = ({ active = false }) => {
       }
     >
       <div className="flex items-center justify-start">
-        <SystemIcon onClick={onSystemIconToggle} className="relative w-4 h-4 fill-current" />
-        {systemMenuActive && <ContextMenu isFixed={true} menu={systemMenu} />}
+        <SystemIcon
+          onClick={onSystemIconToggle}
+          className="relative w-4 h-4 fill-current"
+        />
+        {systemMenuActive && <ContextMenu menu={systemMenu} />}
         <div className="font-semibold mx-3">App Name</div>
         <ul className="flex items-center justify-start gap-3 ml-1">
           {appMenu.map((menuItem, key) => (
