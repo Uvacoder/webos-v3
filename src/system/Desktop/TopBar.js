@@ -1,46 +1,134 @@
-import React, { useEffect, useState } from 'react'
+import React, { createElement, useEffect, useState } from 'react'
+import { IoRadioButtonOn as SystemIcon } from 'react-icons/io5'
+import * as TrayIcons from 'react-icons/io5'
 
-import { IoLeaf } from 'react-icons/io5'
+import { ContextMenu } from '../ContextMenu'
 
 export const TopBar = ({ active = false }) => {
   const [realActive, setRealActive] = useState(false)
+  const [systemMenuActive, setSystemMenuActive] = useState(false)
 
   useEffect(() => {
     if (active) {
       setTimeout(() => {
         setRealActive(true)
-      }, 1000);
+      }, 1000)
     }
   }, [active])
+
+  const onSystemIconToggle = () => {
+    setSystemMenuActive(!systemMenuActive)
+  }
+
+  const systemMenu = [
+    {
+      label: 'File',
+      shortcut: 'F',
+      iconCode: null
+    },
+    {
+      label: 'Edit',
+      children: [],
+    },
+    {
+      label: 'Selection',
+      children: [],
+    },
+    {
+      label: 'View',
+      children: [],
+    },
+    {
+      label: 'Go',
+      children: [],
+    },
+    null,
+    {
+      label: 'Logout',
+      iconCode: 'IoPower'
+    }
+  ]
+
+  const appMenu = [
+    {
+      label: 'File',
+      children: [],
+    },
+    {
+      label: 'Edit',
+      children: [],
+    },
+    {
+      label: 'Selection',
+      children: [],
+    },
+    {
+      label: 'View',
+      children: [],
+    },
+    {
+      label: 'Go',
+      children: [],
+    },
+    {
+      label: 'Run',
+      children: [],
+    },
+    {
+      label: 'Terminal',
+      children: [],
+    },
+    {
+      label: 'Help',
+      children: [],
+    },
+  ]
+
+  const trayItems = [
+    {
+      label: 'Power',
+      iconCode: 'IoBatteryCharging',
+    },
+    {
+      label: 'Pulse',
+      iconCode: 'IoPulse',
+    },
+    {
+      label: 'Connectivity',
+      iconCode: 'IoCodeWorking',
+    },
+  ]
 
   return (
     <div
       className={
-        'flex duration-500 transition-all justify-between items-center px-2 mx-1 shadow-lg rounded-b fixed z-50 left-0 right-0 bg-white bg-opacity-90 py-0.5 ' +
+        'flex duration-500 transition-all justify-between items-center px-3 mx-1 shadow-lg rounded-b fixed z-50 left-0 right-0 bg-white bg-opacity-90 py-0.5 ' +
         (realActive ? 'top-0 opacity-100' : '-top-10 opacity-0')
       }
     >
       <div className="flex items-center justify-start">
-        <IoLeaf />
+        <SystemIcon onClick={onSystemIconToggle} className="relative w-4 h-4 fill-current" />
+        {systemMenuActive && <ContextMenu isFixed={true} menu={systemMenu} />}
         <div className="font-semibold mx-3">App Name</div>
-        <ul className="flex items-center justify-start gap-3">
-          <li>File</li>
-          <li>Edit</li>
-          <li>Selection</li>
-          <li>View</li>
-          <li>Go</li>
-          <li>Run</li>
-          <li>Terminal</li>
-          <li>Help</li>
+        <ul className="flex items-center justify-start gap-3 ml-1">
+          {appMenu.map((menuItem, key) => (
+            <li key={key}>{menuItem.label}</li>
+          ))}
         </ul>
       </div>
       <ul className="flex items-center justify-end">
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
-        <li>4</li>
-        <li>5</li>
+        {trayItems.map((trayItem, key) => (
+          <li key={key}>
+            <TrayIcon iconCode={trayItem.iconCode} />
+          </li>
+        ))}
       </ul>
     </div>
   )
+}
+
+const TrayIcon = ({ iconCode }) => {
+  return createElement(TrayIcons[iconCode] ?? TrayIcons.IoHelpCircleOutline, {
+    className: 'fill-current w-5 h-5 ml-3',
+  })
 }
